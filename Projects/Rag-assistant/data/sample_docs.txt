@@ -1,0 +1,35 @@
+# Introduction to Generative AI
+
+Generative AI refers to artificial intelligence systems capable of generating new content such as text, images, code, audio, and video. These systems are typically powered by large language models (LLMs) based on the transformer architecture. Generative AI models are trained on massive datasets and learn statistical patterns in language or other modalities to produce contextually relevant outputs.
+
+Large Language Models predict the next token in a sequence using probability distributions learned during training. The transformer architecture uses self-attention mechanisms, which allow the model to weigh the importance of different words in a sentence. This enables the model to capture long-range dependencies and contextual meaning.
+
+# Embeddings and Vector Representations
+
+Embeddings are numerical vector representations of text. They convert words, sentences, or documents into high-dimensional vectors such that semantically similar items are closer in vector space. Embeddings are fundamental for search, clustering, recommendation systems, and retrieval-augmented generation systems.
+
+In enterprise systems, embeddings are stored inside vector databases such as FAISS, Pinecone, or other similarity search engines. When a user submits a query, it is converted into an embedding and compared against stored document embeddings using similarity metrics like cosine similarity or L2 distance.
+
+# Retrieval-Augmented Generation (RAG)
+
+Retrieval-Augmented Generation is a system design pattern that combines information retrieval with generative models. Instead of relying solely on the knowledge stored in a language model's parameters, RAG retrieves relevant documents from a knowledge base and injects them into the prompt before generation.
+
+The typical RAG pipeline consists of document ingestion, chunking, embedding generation, vector storage, similarity search, context assembly, and final response generation. This architecture reduces hallucination and improves factual grounding.
+
+RAG systems are widely used in enterprise knowledge assistants, legal research tools, financial document search, and internal corporate AI assistants.
+
+# Agentic AI Systems
+
+Agentic AI refers to systems where language models act as autonomous agents capable of planning, reasoning, and using tools. An agent is typically composed of an LLM, memory modules, tool integrations, and a control loop that enables iterative decision-making.
+
+Agents can call APIs, execute code, search the web, access databases, and perform multi-step workflows. Agentic systems are used in automation, sales outreach, DevOps operations, research assistance, and workflow orchestration.
+
+Safety mechanisms such as guardrails, rate limiting, human approval steps, and logging are critical in production-grade agentic systems.
+
+# AI Engineering and Production Systems
+
+AI engineering focuses on deploying machine learning and generative AI systems into scalable, reliable production environments. This includes API design, monitoring, model versioning, cost optimization, latency reduction, and infrastructure management.
+
+Production AI systems typically consist of a frontend interface, backend API services, model inference layer, vector database, logging system, and monitoring dashboards. Engineers must manage data pipelines, security concerns, and compliance requirements.
+
+Observability tools and experiment tracking systems are used to monitor performance, detect drift, and evaluate model outputs over time.
