@@ -1,36 +1,32 @@
 from src.chunking import chunk_text
 from src.embedder import get_embeddings
 from src.vector_store import create_faiss_index
-from src.search import search
+from src.rag_pipeline import run_rag
 
-from openai import OpenAI
-from dotenv import load_dotenv
-import os
-
-load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-# Load document
+# Load docs
 with open("data/sample_docs.txt", "r", encoding="utf-8") as f:
     text = f.read()
 
-# Chunk
+# Chunk documents
 chunks = chunk_text(text)
 
-# Embed chunks
+# Create embeddings
 embeddings = get_embeddings(chunks)
 
-# Create FAISS index
+# Build FAISS index
 index = create_faiss_index(embeddings)
 
-# Query
-query = "What is Retrieval Augmented Generation?"
-query_embedding = get_embeddings([query])[0]
+# Query loop
+while True:
 
-results = search(index, query_embedding)
+    question = input("\nAsk a question: ")
 
-print("Top relevant chunks:")
-for idx in results:
-    print("\n---")
-    print(chunks[idx])
-    
+    answer, sources = run_rag(index, chunks, question)
+
+    print("\nAnswer:\n")
+    print(answer)
+
+    print("\nSources:\n")
+
+    for s in sources:
+        print("-", s[:120])
