@@ -10,7 +10,10 @@ from src.chunking import chunk_text
 from src.embedder import get_embeddings
 from src.vector_store import create_faiss_index
 from src.rag_pipeline import run_rag
+from src.ingestion import build_index
 
+
+index, chunks = build_index("data/documents")
 # Load environment variables
 load_dotenv()
 
