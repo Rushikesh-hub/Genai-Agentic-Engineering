@@ -1,4 +1,4 @@
-def chunk_documents(documents, chunk_size=300, overlap=50):
+def chunk_documents(documents, chunk_size=400, overlap=80):
 
     chunks = []
 
@@ -13,10 +13,10 @@ def chunk_documents(documents, chunk_size=300, overlap=50):
 
             end = start + chunk_size
 
-            chunk_text = text[start:end]
+            chunk = text[start:end]
 
             chunks.append({
-                "text": chunk_text,
+                "text": chunk,
                 "source": source
             })
 

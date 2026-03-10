@@ -1,4 +1,27 @@
 import os
+from PyPDF2 import PdfReader
+
+
+def load_txt(path):
+
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
+
+def load_pdf(path):
+
+    reader = PdfReader(path)
+
+    text = ""
+
+    for page in reader.pages:
+        extracted = page.extract_text()
+
+        if extracted:
+            text += extracted
+
+    return text
+
 
 def load_documents(folder_path):
 
@@ -10,13 +33,18 @@ def load_documents(folder_path):
 
         if file.endswith(".txt"):
 
-            with open(path, "r", encoding="utf-8") as f:
+            text = load_txt(path)
 
-                text = f.read()
+        elif file.endswith(".pdf"):
 
-                documents.append({
-                    "content": text,
-                    "source": file
-                })
+            text = load_pdf(path)
+
+        else:
+            continue
+
+        documents.append({
+            "content": text,
+            "source": file
+        })
 
     return documents
