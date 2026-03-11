@@ -1,5 +1,5 @@
 from src.loader import load_documents
-from src.chunking import chunk_documents
+from src.chunking import semantic_chunk_documents
 from src.embedder import get_embeddings
 from src.vector_store import create_faiss_index
 
@@ -8,7 +8,7 @@ def build_index(doc_folder):
 
     documents = load_documents(doc_folder)
 
-    chunks = chunk_documents(documents)
+    chunks = semantic_chunk_documents(documents)
 
     texts = [c["text"] for c in chunks]
 

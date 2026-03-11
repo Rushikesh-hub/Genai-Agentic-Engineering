@@ -1,25 +1,29 @@
-def chunk_documents(documents, chunk_size=400, overlap=80):
+import nltk
+
+nltk.download('punkt')
+
+from nltk.tokenize import sent_tokenize
+
+
+def semantic_chunk_documents(documents, max_sentences=5):
 
     chunks = []
 
     for doc in documents:
 
-        text = doc["content"]
+        sentences = sent_tokenize(doc["content"])
+
         source = doc["source"]
 
-        start = 0
+        for i in range(0, len(sentences), max_sentences):
 
-        while start < len(text):
+            group = sentences[i:i + max_sentences]
 
-            end = start + chunk_size
-
-            chunk = text[start:end]
+            chunk_text = " ".join(group)
 
             chunks.append({
-                "text": chunk,
+                "text": chunk_text,
                 "source": source
             })
-
-            start += chunk_size - overlap
 
     return chunks
