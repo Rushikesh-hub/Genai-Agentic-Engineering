@@ -1,9 +1,14 @@
 from agent.agent import agent
 
+print("\nAgent Ready! Ask anything.\n")
+
 while True:
 
-    query = input("\nAsk the agent: ")
+    query = input("You: ")
+
+    if query.lower() in ["exit", "quit"]:
+        break
 
     response = agent.run(query)
 
-    print("\nAgent Response:\n", response)
+    print("\nAgent:", response, "\n")
