@@ -3,29 +3,37 @@ from langchain.agents import initialize_agent
 from langchain.agents import Tool
 
 from tools.calculator import calculator_tool
-from tools.search_tool import search_tool
+from tools.web_search import web_search_tool
 
-llm = ChatOpenAI(model="gpt-4.1-mini")
+from agent.memory import memory
+
+
+llm = ChatOpenAI(
+    model="gpt-4.1-mini",
+    temperature=0
+)
+
 
 tools = [
 
     Tool(
         name="Calculator",
         func=calculator_tool,
-        description="Useful for performing mathematical calculations"
+        description="Useful for solving math problems"
     ),
 
     Tool(
-        name="Search",
-        func=search_tool,
-        description="Useful for searching information about AI topics"
+        name="WebSearch",
+        func=web_search_tool,
+        description="Search the internet for current information"
     )
 ]
 
 
 agent = initialize_agent(
-    tools,
-    llm,
-    agent="zero-shot-react-description",
+    tools=tools,
+    llm=llm,
+    agent="conversational-react-description",
+    memory=memory,
     verbose=True
 )
