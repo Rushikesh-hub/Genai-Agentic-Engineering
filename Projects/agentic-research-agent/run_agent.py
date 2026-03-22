@@ -1,14 +1,27 @@
-from agent.agent import agent
+from agent.planner import create_plan
+from agent.executor import execute_plan
 
-print("\nAgent Ready! Ask anything.\n")
+print("\nTask Planning Agent Ready!\n")
 
 while True:
 
-    query = input("You: ")
+    goal = input("Enter your goal: ")
 
-    if query.lower() in ["exit", "quit"]:
+    if goal.lower() in ["exit", "quit"]:
         break
 
-    response = agent.run(query)
+    print("\n--- Creating Plan ---\n")
 
-    print("\nAgent:", response, "\n")
+    plan = create_plan(goal)
+
+    print(plan)
+
+    print("\n--- Executing Plan ---\n")
+
+    results = execute_plan(plan)
+
+    print("\n--- Final Results ---\n")
+
+    for r in results:
+        print(f"\nStep: {r['step']}")
+        print(f"Result: {r['result']}")
