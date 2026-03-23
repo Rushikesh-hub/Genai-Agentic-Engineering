@@ -1,7 +1,7 @@
 from agent.planner import create_plan
-from agent.executer import execute_plan
+from agent.executor import execute_plan
 
-print("\nTask Planning Agent Ready!\n")
+print("\nAdvanced Agent Ready!\n")
 
 while True:
 
@@ -25,3 +25,4 @@ while True:
     for r in results:
         print(f"\nStep: {r['step']}")
         print(f"Result: {r['result']}")
+        print(f"Status: {r['status']}")
