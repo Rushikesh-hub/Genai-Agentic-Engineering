@@ -1,23 +1,38 @@
 from agent.agent import agent
+from agent.reflection import reflect
 
-def execute_plan(plan: str):
 
-    steps = plan.split("\n")
+def execute_plan(plan):
 
     results = []
 
-    for step in steps:
+    for task in plan:
 
-        if step.strip() == "":
-            continue
+        step = task["step"]
 
         print(f"\nExecuting: {step}")
 
-        result = agent.run(step)
+        retries = 2
+        success = False
+
+        while retries > 0 and not success:
+
+            result = agent.run(step)
+
+            evaluation = reflect(step, result)
+
+            print(f"Reflection: {evaluation}")
+
+            if "YES" in evaluation.upper():
+                success = True
+            else:
+                print("Retrying step...")
+                retries -= 1
 
         results.append({
             "step": step,
-            "result": result
+            "result": result,
+            "status": "success" if success else "failed"
         })
 
     return results
