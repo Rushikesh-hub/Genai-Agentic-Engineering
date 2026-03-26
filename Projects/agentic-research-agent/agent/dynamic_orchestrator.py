@@ -6,8 +6,15 @@ from tools.calculator import calculator_tool
 from agent.multi_agents.analyst import analyst_agent
 from agent.multi_agents.writer import writer_agent
 
+from agent.memory_store.memory_manager import store_memory, retrieve_memory
+
 
 def run_dynamic_system(query):
+
+    # 🔹 Step 1: Retrieve memory
+    past_context = retrieve_memory(query)
+
+    print(f"\n[Memory Retrieved]: {past_context}\n")
 
     decision = route_query(query)
 
@@ -17,16 +24,20 @@ def run_dynamic_system(query):
 
         data = web_search_tool(query)
         analysis = analyst_agent(data)
-        final = writer_agent(analysis)
-        return final
+        result = writer_agent(analysis)
 
     elif decision == "RAG":
 
-        return rag_agent(query)
+        result = rag_agent(query)
 
     elif decision == "CALCULATOR":
 
-        return calculator_tool(query)
+        result = calculator_tool(query)
 
     else:
-        return "Could not determine route"
+        result = "Could not determine route"
+
+    # 🔹 Step 2: Store memory
+    store_memory(f"Q: {query} | A: {result}")
+
+    return result
