@@ -176,3 +176,4 @@ async def chat_stream(request: ChatRequest):
             status_code=500,
             detail="Streaming error"
         )
+    
