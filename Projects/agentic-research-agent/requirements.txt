@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+openai
+langchain
+langchain-openai
+python-dotenv
+faiss-cpu
+numpy
+pandas
+scikit-learn
+duckduckgo-search
+PyPDF2
+nltk
