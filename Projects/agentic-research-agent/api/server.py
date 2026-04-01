@@ -177,3 +177,9 @@ async def chat_stream(request: ChatRequest):
             detail="Streaming error"
         )
     
+@app.get("/metrics")
+def metrics():
+    return {
+        "total_sessions": len(sessions),
+        "status": "running"
+    }
