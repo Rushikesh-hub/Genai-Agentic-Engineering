@@ -1,7 +1,8 @@
 import uuid
 import asyncio
 import logging
-
+import time
+from utils.logger import log_request, log_response, log_error
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -96,36 +97,63 @@ async def stream_response(text: str):
 async def chat(request: ChatRequest):
 
     try:
+        start_time = time.time()
 
+        # -----------------------------
+        # Session Handling
+        # -----------------------------
         session_id = get_session(request.session_id)
 
-        logger.info(f"[CHAT] Session: {session_id}")
-        logger.info(f"[USER] {request.message}")
+        # -----------------------------
+        # Log Incoming Request
+        # -----------------------------
+        log_request(session_id, request.message)
 
+        # Store user message
         sessions[session_id].append({
             "role": "user",
             "content": request.message
         })
 
-        # Run agent system
+        # -----------------------------
+        # Run Agent System
+        # -----------------------------
         response = run_dynamic_system(request.message)
 
+        # -----------------------------
+        # Store Response
+        # -----------------------------
         sessions[session_id].append({
             "role": "assistant",
             "content": response
         })
 
-        logger.info(f"[ASSISTANT] {response[:100]}...")
+        # -----------------------------
+        # Latency Tracking
+        # -----------------------------
+        latency = time.time() - start_time
 
+        # -----------------------------
+        # Logging
+        # -----------------------------
+        log_response(session_id, response)
+        logger.info(f"[LATENCY] Session: {session_id} | {latency:.2f}s")
+
+        # -----------------------------
+        # Final Response
+        # -----------------------------
         return {
             "session_id": session_id,
-            "response": response
+            "response": response,
+            "latency_seconds": round(latency, 2)
         }
 
     except Exception as e:
 
-        logger.error("Error in /chat endpoint")
-        logger.error(str(e))
+        # -----------------------------
+        # Error Logging
+        # -----------------------------
+        log_error(e)
 
         raise HTTPException(
             status_code=500,
