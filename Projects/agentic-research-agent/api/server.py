@@ -2,6 +2,7 @@ import uuid
 import asyncio
 import logging
 import time
+from utils.evaluator import evaluate_response
 from utils.logger import log_request, log_response, log_error
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
@@ -103,7 +104,8 @@ async def chat(request: ChatRequest):
         # Session Handling
         # -----------------------------
         session_id = get_session(request.session_id)
-
+        evaluation = evaluate_response(request.message, response)
+        
         # -----------------------------
         # Log Incoming Request
         # -----------------------------
