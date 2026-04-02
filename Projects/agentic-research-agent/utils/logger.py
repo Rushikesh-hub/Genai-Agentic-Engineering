@@ -13,6 +13,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+
 def log_request(session_id, message):
     logger.info(f"[REQUEST] Session: {session_id} | Message: {message}")
 
@@ -23,3 +24,6 @@ def log_response(session_id, response):
 
 def log_error(error):
     logger.error(f"[ERROR] {str(error)}")
+
+def log_evaluation(session_id, evaluation):
+    logger.info(f"[EVALUATION] Session: {session_id} | {evaluation}")

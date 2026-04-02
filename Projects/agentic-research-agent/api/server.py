@@ -3,7 +3,7 @@ import asyncio
 import logging
 import time
 from utils.evaluator import evaluate_response
-from utils.logger import log_request, log_response, log_error
+from utils.logger import log_request, log_response, log_error, log_evaluation
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -101,13 +101,16 @@ async def chat(request: ChatRequest):
         start_time = time.time()
 
         # -----------------------------
-        # Session Handling
+        # 1. Session Handling (MUST FIRST)
         # -----------------------------
         session_id = get_session(request.session_id)
-        evaluation = evaluate_response(request.message, response)
-        
+
+        # Safety check (extra protection)
+        if session_id not in sessions:
+            sessions[session_id] = []
+
         # -----------------------------
-        # Log Incoming Request
+        # 2. Log Request
         # -----------------------------
         log_request(session_id, request.message)
 
@@ -118,12 +121,17 @@ async def chat(request: ChatRequest):
         })
 
         # -----------------------------
-        # Run Agent System
+        # 3. Run Agent System
         # -----------------------------
         response = run_dynamic_system(request.message)
 
         # -----------------------------
-        # Store Response
+        # 4. Evaluate Response
+        # -----------------------------
+        evaluation = evaluate_response(request.message, response)
+
+        # -----------------------------
+        # 5. Store Assistant Response
         # -----------------------------
         sessions[session_id].append({
             "role": "assistant",
@@ -131,29 +139,34 @@ async def chat(request: ChatRequest):
         })
 
         # -----------------------------
-        # Latency Tracking
+        # 6. Latency Tracking
         # -----------------------------
         latency = time.time() - start_time
 
         # -----------------------------
-        # Logging
+        # 7. Logging (ALL AFTER EXECUTION)
         # -----------------------------
         log_response(session_id, response)
-        logger.info(f"[LATENCY] Session: {session_id} | {latency:.2f}s")
+        log_evaluation(session_id, evaluation)
+
+        logger.info(
+            f"[LATENCY] Session: {session_id} | {latency:.2f}s"
+        )
 
         # -----------------------------
-        # Final Response
+        # 8. Return Response
         # -----------------------------
         return {
             "session_id": session_id,
             "response": response,
+            "evaluation": evaluation,
             "latency_seconds": round(latency, 2)
         }
 
     except Exception as e:
 
         # -----------------------------
-        # Error Logging
+        # Error Handling
         # -----------------------------
         log_error(e)
 
@@ -161,7 +174,6 @@ async def chat(request: ChatRequest):
             status_code=500,
             detail="Internal server error"
         )
-
 
 # -----------------------------
 # Streaming Endpoint
