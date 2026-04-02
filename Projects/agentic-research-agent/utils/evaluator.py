@@ -1,3 +1,4 @@
+import json
 from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI(model="gpt-4.1-mini", temperature=0)
@@ -14,13 +15,13 @@ Evaluate the response based on:
 2. Correctness
 3. Clarity
 
-Return JSON:
+Return STRICT JSON format:
 
 {{
- "relevance": score (1-10),
- "correctness": score (1-10),
- "clarity": score (1-10),
- "hallucination": YES or NO
+ "relevance": number (1-10),
+ "correctness": number (1-10),
+ "clarity": number (1-10),
+ "hallucination": "YES" or "NO"
 }}
 
 Question:
@@ -32,4 +33,10 @@ Response:
 
     result = llm.invoke(prompt)
 
-    return result.content
+    try:
+        return json.loads(result.content)
+    except Exception:
+        return {
+            "error": "evaluation parsing failed",
+            "raw_output": result.content
+        }
