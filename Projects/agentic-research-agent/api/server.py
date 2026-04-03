@@ -158,6 +158,8 @@ async def chat(request: ChatRequest):
 
         cached_response = get_cache(cache_key)
 
+        set_cache(cache_key, response)
+
         if cached_response:
             logger.info(f"[CACHE HIT] {cache_key}")
 
