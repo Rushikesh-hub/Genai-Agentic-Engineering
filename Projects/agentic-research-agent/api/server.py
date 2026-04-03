@@ -2,6 +2,7 @@ import uuid
 import asyncio
 import logging
 import time
+from utils.cache import get_cache, set_cache
 from utils.evaluator import evaluate_response
 from utils.logger import log_request, log_response, log_error, log_evaluation
 from fastapi import FastAPI, HTTPException
@@ -153,15 +154,18 @@ async def chat(request: ChatRequest):
             f"[LATENCY] Session: {session_id} | {latency:.2f}s"
         )
 
-        # -----------------------------
-        # 8. Return Response
-        # -----------------------------
-        return {
-            "session_id": session_id,
-            "response": response,
-            "evaluation": evaluation,
-            "latency_seconds": round(latency, 2)
-        }
+        cache_key = request.message.lower().strip()
+
+        cached_response = get_cache(cache_key)
+
+        if cached_response:
+            logger.info(f"[CACHE HIT] {cache_key}")
+
+            return {
+                "session_id": session_id,
+                "response": cached_response,
+                "cached": True
+            }
 
     except Exception as e:
 
