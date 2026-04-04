@@ -2,6 +2,8 @@ import uuid
 import asyncio
 import logging
 import time
+from fastapi import Header
+from utils.security import check_rate_limit, verify_api_key
 from utils.cache import get_cache, set_cache
 from utils.evaluator import evaluate_response
 from utils.logger import log_request, log_response, log_error, log_evaluation
@@ -96,10 +98,25 @@ async def stream_response(text: str):
 # -----------------------------
 
 @app.post("/chat")
-async def chat(request: ChatRequest):
+async def chat(request: ChatRequest, x_api_key: str = Header(None)):
 
     try:
         start_time = time.time()
+        
+        # -----------------------------
+        # 0. Security Layer (FIRST)
+        # -----------------------------
+
+        if not verify_api_key(x_api_key):
+            raise HTTPException(status_code=401, detail="Invalid API Key")
+
+        client_id = x_api_key  # can also use IP later
+
+        if not check_rate_limit(client_id):
+            raise HTTPException(
+                status_code=429,
+                detail="Rate limit exceeded. Try again later."
+            )
 
         # -----------------------------
         # 1. Session Handling (MUST FIRST)
@@ -157,6 +174,7 @@ async def chat(request: ChatRequest):
         cache_key = request.message.lower().strip()
 
         cached_response = get_cache(cache_key)
+        
 
         set_cache(cache_key, response)
 
