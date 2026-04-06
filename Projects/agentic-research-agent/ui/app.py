@@ -1,8 +1,18 @@
 import streamlit as st
 import requests
 
-API_URL = "http://127.0.0.1:8000/chat"
+API_URL = "http://127.0.0.1:8000/chat-stream"
 API_KEY = "my-secret-key"
+
+st.markdown("""
+<style>
+.chat-message {
+    padding: 10px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+</style>
+""", unsafe_allow_html=True)
 
 st.set_page_config(page_title="AI Assistant", layout="wide")
 
@@ -36,9 +46,10 @@ if user_input:
         "role": "user",
         "content": user_input
     })
-
+    
     with st.chat_message("user"):
         st.markdown(user_input)
+        
 
     # -----------------------------
     # Call API
