@@ -43,6 +43,7 @@ if user_input:
     # -----------------------------
     # Call API
     # -----------------------------
+
     headers = {
         "x-api-key": API_KEY
     }
@@ -52,27 +53,33 @@ if user_input:
         "session_id": st.session_state.session_id
     }
 
-    response = requests.post(API_URL, json=payload, headers=headers)
+    with st.chat_message("assistant"):
 
-    if response.status_code == 200:
-        data = response.json()
+        response_placeholder = st.empty()
+        full_response = ""
 
-        st.session_state.session_id = data["session_id"]
+        try:
+            with requests.post(API_URL, json=payload, headers=headers, stream=True) as r:
 
-        bot_reply = data["response"]
+                if r.status_code == 200:
 
-    else:
-        bot_reply = "⚠️ Error: Could not connect to API"
+                    for chunk in r.iter_content(chunk_size=20):
 
-    # -----------------------------
-    # Show assistant response
-    # -----------------------------
+                        if chunk:
+                            text = chunk.decode("utf-8")
+                            full_response += text
+                            response_placeholder.markdown(full_response)
+
+                else:
+                    full_response = "⚠️ API Error"
+
+        except Exception:
+            full_response = "⚠️ Connection error"
+
+    # Save response
     st.session_state.messages.append({
         "role": "assistant",
-        "content": bot_reply
+        "content": full_response
     })
-
-    with st.chat_message("assistant"):
-        st.markdown(bot_reply)
 
         
