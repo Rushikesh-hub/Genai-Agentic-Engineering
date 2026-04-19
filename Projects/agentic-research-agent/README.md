@@ -53,4 +53,3 @@ cd project
 pip install -r requirements.txt
 uvicorn api.server:app --reload
 streamlit run ui/app.py
-
